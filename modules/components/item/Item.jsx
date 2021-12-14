@@ -37,11 +37,15 @@ const typeMap = {
       onDragStart={props.onDragStart}
       isDraggingTempo={props.isDraggingTempo}
       parentField={props.parentField}
+
+      renderHeader={props.renderHeader}
+      test={'test'}
     />
   ),
   group: (props) => (
-    <Group 
+    <Group
       {...getProperties(props)}
+      renderHeader={props.renderHeader}
       id={props.id}
       groupId={props.groupId}
       path={props.path}
@@ -53,14 +57,17 @@ const typeMap = {
       onDragStart={props.onDragStart}
       isDraggingTempo={props.isDraggingTempo}
       children1={props.children1}
+      test={'test'}
       parentField={null}
     />
   ),
   rule_group: (props) => (
-    <RuleGroup 
+    <RuleGroup
       {...getProperties(props)}
       id={props.id}
       groupId={props.groupId}
+      test={'test'}
+      renderHeader={props.renderHeader}
       path={props.path}
       actions={props.actions}
       config={props.config}
@@ -74,10 +81,12 @@ const typeMap = {
     />
   ),
   rule_group_ext: (props) => (
-    <RuleGroupExt 
+    <RuleGroupExt
       {...getProperties(props)}
       id={props.id}
       groupId={props.groupId}
+      test={'test'}
+      renderHeader={props.renderHeader}
       path={props.path}
       actions={props.actions}
       config={props.config}

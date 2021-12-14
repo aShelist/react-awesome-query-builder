@@ -56,6 +56,7 @@ body.qb-dragging {
   font-size: 14px;
   line-height: 1.25;
   margin: 1rem;
+  padding-bottom: 1rem;
 }
 
 .query-builder.qb-dragging {
@@ -67,14 +68,13 @@ body.qb-dragging {
 }
 
 .group {
-  background: rgba(250, 240, 210, 0.5);
-  border: 1px solid #DCC896;
+  //background: rgba(250, 240, 210, 0.5);
+  //border: 1px solid #DCC896;
 }
 
 .rule {
   background-color: white;
-  border: 1px solid transparent;
-  padding: 10px;
+  padding: 8px;
 }
 
 .rule-with-error .rule {
@@ -143,10 +143,6 @@ ul.ant-select-selection__rendered {
   margin-right: 11px;
 }
 
-/* for antd v4 default is 32 - too big */
-.ant-select-item {
-  min-height: 22px;
-}
 
 /******************************************************************************/
 /** GROUP *********************************************************************/
@@ -156,12 +152,13 @@ ul.ant-select-selection__rendered {
   @extend %flex;
 }
 
+
 .group--children {
-  padding-left: 24px;
+  padding-left: 40px;
 
   & > .group-or-rule-container > .group-or-rule {
     &:before {
-        top: -4px;
+        top: -27px;
         border-width: 0 0 2px 2px;
     }
 
@@ -173,11 +170,11 @@ ul.ant-select-selection__rendered {
     &::before, &::after {
         content: '';
         position: absolute;
-        left: -14px;
-        width: 14px;
-        height: calc(50% + 8px);
+        left: -24px;
+        width: 24px;
+        height: calc(50% + 27px);
         border-color: #CCC;
-        border-style: solid;    
+        border-style: solid;
         -webkit-box-sizing: border-box;
         -moz-box-sizing: border-box;
         box-sizing: border-box;
@@ -221,6 +218,18 @@ ul.ant-select-selection__rendered {
 
 }
 
+.group-or-rule-and > .group--children > .group-or-rule-container > .group-or-rule {
+  &::before, &::after {
+    border-color: #4289E4;
+  }
+}
+
+.group-or-rule-or > .group--children > .group-or-rule-container > .group-or-rule {
+  &::before, &::after {
+    border-color: #6BA134;
+  }
+}
+
 .group--children.hide--line {
     & > .group-or-rule-container > .group-or-rule {
         &::before, &::after {
@@ -257,9 +266,17 @@ ul.ant-select-selection__rendered {
 }
 
 .group--actions {
-  margin-left: 10px;
-  flex: 1;
-  display: flex;
+  position: absolute;
+  left: -32px;
+  top: calc(50% + 5px);
+  &__dropdown {
+    border: none;
+    color: #4289E4;
+    span {
+      font-size: 26px;
+    }
+  }
+
   &--tl,
   &--bl{
     justify-content: flex-start;
@@ -276,7 +293,7 @@ ul.ant-select-selection__rendered {
 
   &--tr,
   &--br{
-    justify-content: flex-end;
+    //justify-content: flex-end;
   }
 
   .action--DELETE {
@@ -364,10 +381,10 @@ ul.ant-select-selection__rendered {
   margin-right: 8px;
 }
 
-$rule_items: ".rule--field", ".group--field", ".rule--operator", ".rule--value", ".rule--operator-options", ".rule--widget", 
+$rule_items: ".rule--field", ".group--field", ".rule--operator", ".rule--value", ".rule--operator-options", ".rule--widget",
  ".widget--widget", ".widget--valuesrc", ".widget--sep", ".operator--options--sep",
  ".rule--before-widget", ".rule--after-widget";
- 
+
 $seps: ".widget--sep", ".operator--options--sep", ".rule--func--bracket-before", ".rule--func--bracket-after", ".rule--func--arg-sep";
 
 #{$rule_items} {
@@ -472,7 +489,7 @@ div.tooltip-inner {
 /** FUNC **********************************************************************/
 /******************************************************************************/
 
-$rule_func_items: ".rule--func--wrapper", ".rule--func", ".rule--func--args", ".rule--func--arg", ".rule--func--arg-value", 
+$rule_func_items: ".rule--func--wrapper", ".rule--func", ".rule--func--args", ".rule--func--arg", ".rule--func--arg-value",
  ".rule--func--bracket-before", ".rule--func--bracket-after", ".rule--func--arg-sep",
  ".rule--func--arg-label", ".rule--func--arg-label-sep";
 
@@ -562,14 +579,14 @@ $rule_func_items: ".rule--func--wrapper", ".rule--func", ".rule--func--args", ".
 }
 
 $group_actions: ".group--drag-handler", ".group--actions";
-$inactive_conjs: ".group--conjunctions .ant-btn:not(.ant-btn-primary)", ".rule_group_ext--drag-handler";
+$inactive_conjs: ".group--conjunctions .ant-btn:not(.btn-group-checked)", ".rule_group_ext--drag-handler";
 $active_conjs: ".group--conjunctions .ant-btn.ant-btn-primary";
 $rule_actions: ".widget--valuesrc", ".rule--drag-handler", ".rule--header";
 
 
 
 .qb-lite {
-  @include visible_only_for_hovered_group($group_actions);
+  //@include visible_only_for_hovered_group($group_actions);
   @include display_only_for_hovered_group($inactive_conjs, $active_conjs);
   @include show_only_for_hovered_rule($rule_actions);
 
@@ -599,7 +616,7 @@ $rule_actions: ".widget--valuesrc", ".rule--drag-handler", ".rule--header";
 }
 .group-or-rule-container {
   margin-top: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 32px;
   padding-right: 10px;
   &:first-child {
     margin-top: 0px !important;
@@ -642,5 +659,47 @@ $rule_actions: ".widget--valuesrc", ".rule--drag-handler", ".rule--header";
     svg {
       height: 100%;
     }
+  }
+}
+
+.btn-group {
+  text-transform: uppercase;
+  width: 45px;
+  height: 16px;
+  padding: 0;
+  border-radius: 2px;
+  font-size: 12px;
+  text-align: center;
+  color: #fff;
+  border: none;
+  &:hover, &:focus, &:active {
+    color: #fff;
+  }
+
+  &:disabled, &:disabled:hover {
+    color: #fff;
+  }
+}
+
+.btn-group-and {
+  background-color: #4289E4 !important;
+}
+
+.btn-group-or {
+  background-color: #6BA134 !important;
+}
+
+.rule-container {
+  background-color: #F9F9F9;
+  .rule {
+    background-color: #F9F9F9;
+  }
+}
+
+.dropdown__item {
+  color: #4289E4;
+  svg {
+    margin-right: 10px;
+    fill: #4289E4;
   }
 }

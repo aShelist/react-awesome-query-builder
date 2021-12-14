@@ -1,22 +1,28 @@
 import React, { PureComponent } from "react";
-import map from "lodash/map";
-import { Button, Radio } from "antd";
+import { Button } from "antd";
+const classNames = require("classnames");
 const ButtonGroup = Button.Group;
 
 
 class ConjsButton extends PureComponent {
   onClick = (_e) => {
-    const {setConjunction, item} = this.props;
-    const conj = item.key;
+    const {setConjunction, anotherItem} = this.props;
+    const conj = anotherItem.key;
     setConjunction(conj);
   }
 
   render() {
     const {disabled, item} = this.props;
+    const cn = classNames(
+      "btn-group",
+      item.key === "OR" && "btn-group-or",
+      item.key === "AND" && "btn-group-and",
+      item.checked && "btn-group-checked"
+    );
     return (
       <Button
         disabled={disabled}
-        type={item.checked ? "primary" : null}
+        className={cn}
         onClick={this.onClick}
       >{item.label}</Button>
     );
@@ -25,18 +31,11 @@ class ConjsButton extends PureComponent {
 
 
 export default class ConjsButtons extends PureComponent {
-  setNot = (e) => {
-    const {setNot, not} = this.props;
-    if (setNot)
-      setNot(!not);
-  }
-
   render() {
-    const {readonly, disabled, not, conjunctionOptions, config, setConjunction, notLabel, showNot} = this.props;
-    const conjsCount = Object.keys(conjunctionOptions).length;
-    const lessThenTwo = disabled;
-    const {forceShowConj, renderSize} = config.settings;
-    const showConj = forceShowConj || conjsCount > 1 && !lessThenTwo;
+    const {readonly, disabled, conjunctionOptions, config, setConjunction } = this.props;
+    const checked = Object.values(conjunctionOptions).find(item => item.checked);
+    const notChecked = Object.values(conjunctionOptions).find(item => !item.checked);
+    const { renderSize } = config.settings;
 
     return (
       <ButtonGroup
@@ -44,57 +43,13 @@ export default class ConjsButtons extends PureComponent {
         size={renderSize}
         disabled={disabled || readonly}
       >
-        {showNot && (readonly ? not : true)
-          && <Button
-            key={"group-not"}
-            onClick={this.setNot}
-            type={not ? "primary" : null}
-            disabled={readonly}
-          >{notLabel}</Button>
-        }
-        {showConj && map(conjunctionOptions, (item, _index) => (readonly || disabled) && !item.checked ? null : (
-          <ConjsButton
-            key={item.id}
-            item={item}
-            disabled={disabled || readonly}
-            setConjunction={setConjunction}
-          />
-        ))}
+        <ConjsButton
+          item={checked}
+          anotherItem={notChecked}
+          disabled={disabled || readonly}
+          setConjunction={setConjunction}
+        />
       </ButtonGroup>
     );
   }
 }
-
-// obsolete
-/*
-const RadioButton = Radio.Button;
-const RadioGroup = Radio.Group;
-class ConjsRadios extends PureComponent {
-  setConjunction = (e) => {
-    const {setConjunction} = this.props;
-    const conj = e.target.value;
-    setConjunction(conj);
-  }
-
-  render() {
-    const {readonly, disabled, selectedConjunction, conjunctionOptions, config} = this.props;
-    return (
-      <RadioGroup
-        key="group-conjs-radios"
-        disabled={disabled}
-        value={selectedConjunction}
-        size={config.settings.renderSize}
-        onChange={this.setConjunction}
-      >
-        {map(conjunctionOptions, (item, _index) => readonly && !item.checked ? null : (
-          <RadioButton
-            key={item.id}
-            value={item.key}
-            //checked={item.checked}
-          >{item.label}</RadioButton>
-        ))}
-      </RadioGroup>
-    );
-  }
-}
-*/

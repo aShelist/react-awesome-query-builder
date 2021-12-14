@@ -39,6 +39,7 @@ export class BasicGroup extends PureComponent {
     setNot: PropTypes.func.isRequired,
     setLock: PropTypes.func.isRequired,
     actions: PropTypes.object.isRequired,
+    renderHeader: PropTypes.func
   };
 
   constructor(props) {
@@ -150,7 +151,7 @@ export class BasicGroup extends PureComponent {
       )}>
         {this.renderHeader()}
         {isGroupTopPosition && this.renderBeforeActions()}
-        {isGroupTopPosition && this.renderActions()}
+        {/*{isGroupTopPosition && this.renderActions()}*/}
         {isGroupTopPosition && this.renderAfterActions()}
       </div>
     );
@@ -161,7 +162,7 @@ export class BasicGroup extends PureComponent {
     return !isGroupTopPosition && (
       <div key="group-footer" className='group--footer'>
         {this.renderBeforeActions()}
-        {this.renderActions()}
+        {/*{this.renderActions()}*/}
         {this.renderAfterActions()}
       </div>
     );
@@ -216,18 +217,24 @@ export class BasicGroup extends PureComponent {
 
   renderChildren() {
     const {children1} = this.props;
-    return children1 ? children1.map(this.renderItem).toList() : null;
+    let index = 0;
+    return children1 ? children1.map((item) => {
+      return this.renderItem(item, index++);
+    }).toList() : null;
   }
 
-  renderItem(item) {
+  renderItem(item, index) {
     const props = this.props;
     const {config, actions, onDragStart, isLocked} = props;
+    const length = props.children1.size;
+
     const isRuleGroup = item.get("type") == "group" && item.getIn(["properties", "field"]) != null;
     const type = isRuleGroup ? "rule_group" : item.get("type");
-    
+
     return (
       <Item
         {...this.extraPropsForItem(item)}
+        renderHeader={ index + 1 === length ? this.renderActions() : <div />}
         key={item.get("id")}
         id={item.get("id")}
         groupId={props.id}

@@ -55,10 +55,10 @@ export default class Widget extends PureComponent {
     const keysForMeta = [
       "config", "field", "fieldFunc", "fieldArg", "leftField", "operator", "valueSrc", "isFuncArg", "asyncListValues"
     ];
-    const needUpdateMeta = !this.meta 
+    const needUpdateMeta = !this.meta
           || keysForMeta
             .map(k => (
-              nextProps[k] !== prevProps[k] 
+              nextProps[k] !== prevProps[k]
                   //tip: for isFuncArg we need to wrap value in Imm list
                   || k == "isFuncArg" && nextProps["isFuncArg"] && nextProps["value"] !== prevProps["value"])
             )
@@ -86,7 +86,7 @@ export default class Widget extends PureComponent {
   }
 
   getMeta({
-    config, field: simpleField, fieldFunc, fieldArg, operator, valueSrc: valueSrcs, value: values, 
+    config, field: simpleField, fieldFunc, fieldArg, operator, valueSrc: valueSrcs, value: values,
     isForRuleGruop, isFuncArg, leftField, asyncListValues
   }) {
     const field = isFuncArg ? {func: fieldFunc, arg: fieldArg} : simpleField;
@@ -157,7 +157,7 @@ export default class Widget extends PureComponent {
         setValueHandler
       };
     });
-      
+
     return {
       defaultWidget,
       fieldDefinition,
@@ -179,7 +179,7 @@ export default class Widget extends PureComponent {
     const value = isFuncArg ? iValues : values;
     const field = isFuncArg ? leftField : aField;
     const {valueSrc, valueLabel} = widgets[delta];
- 
+
     const widgetLabel = settings.showLabels
       ? <label className="rule--label">{valueLabel.label}</label>
       : null;
@@ -208,39 +208,6 @@ export default class Widget extends PureComponent {
     );
   }
 
-  renderValueSources = (delta, meta, props) => {
-    const {config, isFuncArg, leftField, operator, readonly} = props;
-    const {settings} = config;
-    const { valueSources, widgets, aField } = meta;
-    const field = isFuncArg ? leftField : aField;
-    const {valueSrc, setValueSrcHandler} = widgets[delta];
-    const {valueSourcesInfo, renderValueSources: ValueSources} = settings;
-    const valueSourcesOptions = valueSources.map(srcKey => [srcKey, {
-      label: valueSourcesInfo[srcKey].label
-    }]);
-
-    const sourceLabel = settings.showLabels
-      ? <label className="rule--label">&nbsp;</label>
-      : null;
-
-    return valueSources.length > 1 && !readonly
-      && <div key={"valuesrc-"+field+"-"+delta} className="widget--valuesrc">
-        {sourceLabel}
-        <ValueSources
-          key={"valuesrc-"+delta}
-          delta={delta}
-          valueSources={valueSourcesOptions}
-          valueSrc={valueSrc}
-          config={config}
-          field={field}
-          operator={operator}
-          setValueSrc={setValueSrcHandler}
-          readonly={readonly}
-          title={settings.valueSourcesPopupTitle}
-        />
-      </div>;
-  }
-
   renderSep = (delta, meta, props) => {
     const {config} = props;
     const {widgets} = meta;
@@ -260,12 +227,10 @@ export default class Widget extends PureComponent {
 
   renderWidgetDelta = (delta) => {
     const sep = this.renderSep(delta, this.meta, this.props);
-    const sources = this.renderValueSources(delta, this.meta, this.props);
     const widgetCmp = this.renderWidget(delta, this.meta, this.props);
 
     return [
       sep,
-      sources,
       widgetCmp,
     ];
   }

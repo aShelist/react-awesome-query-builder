@@ -3,7 +3,7 @@ import merge from "lodash/merge";
 import {
   BasicConfig, BasicFuncs, Utils,
   // types:
-  Operators, Widgets, Fields, Config, Types, Conjunctions, Settings, LocaleSettings, OperatorProximity, Funcs, 
+  Operators, Widgets, Fields, Config, Types, Conjunctions, Settings, LocaleSettings, OperatorProximity, Funcs,
   DateTimeFieldSettings,
 } from "react-awesome-query-builder";
 import moment from "moment";
@@ -188,7 +188,7 @@ export default (skin: string) => {
     fieldLabel: "Field",
     operatorLabel: "Operator",
     funcLabel: "Function",
-    fieldPlaceholder: "Select field",
+    fieldPlaceholder: "Выберите поле",
     funcPlaceholder: "Select function",
     operatorPlaceholder: "Select operator",
     lockLabel: "Lock",
@@ -222,7 +222,8 @@ export default (skin: string) => {
     defaultSelectWidth: "200px",
     defaultSearchWidth: "100px",
     defaultMaxRows: 5,
-
+    showNot: false,
+    renderSize: "medium",
     valueSourcesInfo: {
       value: {
         label: "Value"
@@ -236,9 +237,9 @@ export default (skin: string) => {
         widget: "func",
       }
     },
-    // canReorder: true,
-    // canRegroup: true,
-    // showLock: true,
+    canReorder: false,
+    canRegroup: false,
+    showLock: false,
     // showNot: true,
     // showLabels: true,
     maxNesting: 5,
@@ -257,311 +258,13 @@ export default (skin: string) => {
   //////////////////////////////////////////////////////////////////////
 
   const fields: Fields = {
-    user: {
-      label: "User",
-      tooltip: "Group of fields",
-      type: "!struct",
-      subfields: {
-        firstName: {
-          label2: "Username", //only for menu's toggler
-          type: "text",
-          excludeOperators: ["proximity"],
-          fieldSettings: {
-            validateValue: (val: string, fieldSettings) => {
-              return (val.length < 10);
-            },
-          },
-          mainWidgetProps: {
-            valueLabel: "Name",
-            valuePlaceholder: "Enter name",
-          },
-        },
-        login: {
-          type: "text",
-          tableName: "t1", // legacy: PR #18, PR #20
-          excludeOperators: ["proximity"],
-          fieldSettings: {
-            validateValue: (val: string, fieldSettings) => {
-              return (val.length < 10 && (val === "" || val.match(/^[A-Za-z0-9_-]+$/) !== null));
-            },
-          },
-          mainWidgetProps: {
-            valueLabel: "Login",
-            valuePlaceholder: "Enter login",
-          },
-        }
-      }
-    },
-    bio: {
-      label: "Bio",
+    name: {
+      label: "Имя",
       type: "text",
-      preferWidgets: ["textarea"],
-      fieldSettings: {
-        maxLength: 1000,
-      }
     },
-    results: {
-      label: "Results",
-      type: "!group",
-      subfields: {
-        product: {
-          type: "select",
-          fieldSettings: {
-            listValues: ["abc", "def", "xyz"],
-          },
-          valueSources: ["value"],
-        },
-        score: {
-          type: "number",
-          fieldSettings: {
-            min: 0,
-            max: 100,
-          },
-          valueSources: ["value"],
-        }
-      }
-    },
-    cars: {
-      label: "Cars",
-      type: "!group",
-      mode: "array",
-      conjunctions: ["AND", "OR"],
-      showNot: true,
-      operators: [
-        // w/ operand - count
-        "equal",
-        "not_equal",
-        "less",
-        "less_or_equal",
-        "greater",
-        "greater_or_equal",
-        "between",
-        "not_between",
-
-        // w/o operand
-        "some",
-        "all",
-        "none",
-      ],
-      defaultOperator: "some",
-      initialEmptyWhere: true, // if default operator is not in config.settings.groupOperators, true - to set no children, false - to add 1 empty
-
-      subfields: {
-        vendor: {
-          type: "select",
-          fieldSettings: {
-            listValues: ["Ford", "Toyota", "Tesla"],
-          },
-          valueSources: ["value"],
-        },
-        year: {
-          type: "number",
-          fieldSettings: {
-            min: 1990,
-            max: 2021,
-          },
-          valueSources: ["value"],
-        }
-      }
-    },
-    prox1: {
-      label: "prox",
-      tooltip: "Proximity search",
+    pet: {
+      label: "Питомец",
       type: "text",
-      operators: ["proximity"],
-    },
-    num: {
-      label: "Number",
-      type: "number",
-      preferWidgets: ["number"],
-      fieldSettings: {
-        min: -1,
-        max: 5
-      },
-      funcs: ["LINEAR_REGRESSION"],
-    },
-    slider: {
-      label: "Slider",
-      type: "number",
-      preferWidgets: ["slider", "rangeslider"],
-      valueSources: ["value", "field"],
-      fieldSettings: {
-        min: 0,
-        max: 100,
-        step: 1,
-        marks: {
-          0: <strong>0%</strong>,
-          100: <strong>100%</strong>
-        },
-        validateValue: (val, fieldSettings) => {
-          return (val < 50 ? null : "Invalid slider value, see validateValue()");
-        },
-      },
-      //overrides
-      widgets: {
-        slider: {
-          widgetProps: {
-            valuePlaceholder: "..Slider",
-          }
-        },
-        rangeslider: {
-          widgetProps: {
-            valueLabels: [
-              { label: "Number from", placeholder: "from" },
-              { label: "Number to", placeholder: "to" },
-            ],
-          }
-        },
-      },
-    },
-    date: {
-      label: "Date",
-      type: "date",
-      valueSources: ["value"],
-      fieldSettings: {
-        dateFormat: "DD-MM-YYYY",
-        validateValue: (val, fieldSettings: DateTimeFieldSettings) => {
-          // example of date validation
-          const dateVal = moment(val, fieldSettings.valueFormat);
-          return dateVal.year() != (new Date().getFullYear()) ? "Please use current year" : null;
-        },
-      },
-    },
-    time: {
-      label: "Time",
-      type: "time",
-      valueSources: ["value"],
-      defaultOperator: "between",
-    },
-    datetime: {
-      label: "DateTime",
-      type: "datetime",
-      valueSources: ["value", "func"]
-    },
-    datetime2: {
-      label: "DateTime2",
-      type: "datetime",
-      valueSources: ["field"]
-    },
-    color: {
-      label: "Color",
-      type: "select",
-      valueSources: ["value"],
-      fieldSettings: {
-        showSearch: true,
-        // * old format:
-        // listValues: {
-        //     yellow: 'Yellow',
-        //     green: 'Green',
-        //     orange: 'Orange'
-        // },
-        // * new format:
-        listValues: [
-          { value: "yellow", title: "Yellow" },
-          { value: "green", title: "Green" },
-          { value: "orange", title: "Orange" }
-        ],
-      },
-    },
-    color2: {
-      label: "Color2",
-      type: "select",
-      fieldSettings: {
-        listValues: {
-          yellow: "Yellow",
-          green: "Green",
-          orange: "Orange",
-          purple: "Purple"
-        },
-      }
-    },
-    multicolor: {
-      label: "Colors",
-      type: "multiselect",
-      fieldSettings: {
-        showSearch: true,
-        listValues: {
-          yellow: "Yellow",
-          green: "Green",
-          orange: "Orange"
-        },
-        allowCustomValues: true,
-      }
-    },
-    selecttree: {
-      label: "Color (tree)",
-      type: "treeselect",
-      fieldSettings: {
-        treeExpandAll: true,
-        // * deep format (will be auto converted to flat format):
-        // listValues: [
-        //     { value: "1", title: "Warm colors", children: [
-        //         { value: "2", title: "Red" },
-        //         { value: "3", title: "Orange" }
-        //     ] },
-        //     { value: "4", title: "Cool colors", children: [
-        //         { value: "5", title: "Green" },
-        //         { value: "6", title: "Blue", children: [
-        //             { value: "7", title: "Sub blue", children: [
-        //                 { value: "8", title: "Sub sub blue and a long text" }
-        //             ] }
-        //         ] }
-        //     ] }
-        // ],
-        // * flat format:
-        listValues: [
-          { value: "1", title: "Warm colors" },
-          { value: "2", title: "Red", parent: "1" },
-          { value: "3", title: "Orange", parent: "1" },
-          { value: "4", title: "Cool colors" },
-          { value: "5", title: "Green", parent: "4" },
-          { value: "6", title: "Blue", parent: "4" },
-          { value: "7", title: "Sub blue", parent: "6" },
-          { value: "8", title: "Sub sub blue and a long text", parent: "7" },
-        ],
-      }
-    },
-    multiselecttree: {
-      label: "Colors (tree)",
-      type: "treemultiselect",
-      fieldSettings: {
-        treeExpandAll: true,
-        listValues: [
-          { value: "1", title: "Warm colors", children: [
-            { value: "2", title: "Red" },
-            { value: "3", title: "Orange" }
-          ] },
-          { value: "4", title: "Cool colors", children: [
-            { value: "5", title: "Green" },
-            { value: "6", title: "Blue", children: [
-              { value: "7", title: "Sub blue", children: [
-                { value: "8", title: "Sub sub blue and a long text" }
-              ] }
-            ] }
-          ] }
-        ]
-      }
-    },
-    autocomplete: {
-      label: "Autocomplete",
-      type: "select",
-      valueSources: ["value"],
-      fieldSettings: {
-        asyncFetch: simulatedAsyncFetch,
-        useAsyncSearch: true,
-        useLoadMore: true,
-        forceAsyncSearch: false,
-        allowCustomValues: false
-      },
-    },
-    stock: {
-      label: "In stock",
-      type: "boolean",
-      defaultValue: true,
-      mainWidgetProps: {
-        labelYes: "+",
-        labelNo: "-"
-      }
     },
   };
 

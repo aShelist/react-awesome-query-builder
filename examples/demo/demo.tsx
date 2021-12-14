@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {
-  Query, Builder, Utils, 
+  Query, Builder, Utils,
   //types:
   ImmutableTree, Config, BuilderProps, JsonTree, JsonLogicTree, ActionMeta, Actions
 } from "react-awesome-query-builder";
@@ -23,7 +23,7 @@ let initValue: JsonTree = loadedInitValue && Object.keys(loadedInitValue).length
 const initLogic: JsonLogicTree = loadedInitLogic && Object.keys(loadedInitLogic).length > 0 ? loadedInitLogic as JsonLogicTree : undefined;
 let initTree: ImmutableTree;
 //initTree = checkTree(loadTree(initValue), loadedConfig);
-initTree = checkTree(loadFromJsonLogic(initLogic, loadedConfig), loadedConfig); // <- this will work same  
+initTree = checkTree(loadFromJsonLogic(initLogic, loadedConfig), loadedConfig); // <- this will work same
 
 // Trick to hot-load new config when you edit `config.tsx`
 const updateEvent = new CustomEvent<CustomEventDetail>("update", { detail: {
@@ -67,7 +67,7 @@ export default class DemoQueryBuilder extends Component<{}, DemoQueryBuilderStat
     }
 
     state = {
-      tree: initTree, 
+      tree: initTree,
       config: loadedConfig,
       skin: initialSkin
     };
@@ -86,7 +86,7 @@ export default class DemoQueryBuilder extends Component<{}, DemoQueryBuilderStat
           <button onClick={this.validate}>validate</button>
           <button onClick={this.switchShowLock}>show lock: {this.state.config.settings.showLock ? "on" : "off"}</button>
         </div>
-        
+
         <Query
           {...this.state.config}
           value={this.state.tree}
@@ -118,7 +118,7 @@ export default class DemoQueryBuilder extends Component<{}, DemoQueryBuilderStat
 
     resetValue = () => {
       this.setState({
-        tree: initTree, 
+        tree: initTree,
       });
     };
 
@@ -141,7 +141,7 @@ export default class DemoQueryBuilder extends Component<{}, DemoQueryBuilderStat
 
     clearValue = () => {
       this.setState({
-        tree: loadTree(emptyInitValue), 
+        tree: loadTree(emptyInitValue),
       });
     };
 
@@ -155,14 +155,12 @@ export default class DemoQueryBuilder extends Component<{}, DemoQueryBuilderStat
         </div>
       );
     }
-    
+
     onChange = (immutableTree: ImmutableTree, config: Config, actionMeta?: ActionMeta) => {
-      if (actionMeta)
-        console.info(actionMeta);
       this.immutableTree = immutableTree;
       this.config = config;
       this.updateResult();
-      
+
       const jsonTree = getTree(immutableTree); //can be saved to backend
     }
 
@@ -175,11 +173,11 @@ export default class DemoQueryBuilder extends Component<{}, DemoQueryBuilderStat
       const rootPath = [ this.state.tree.get("id") as string ];
       const isEmptyTree = !this.state.tree.get("children1");
       const firstPath = [
-        this.state.tree.get("id"), 
+        this.state.tree.get("id"),
         ((this.state.tree.get("children1") as ImmOMap)?.first() as ImmOMap)?.get("id")
       ];
       const lastPath = [
-        this.state.tree.get("id"), 
+        this.state.tree.get("id"),
         ((this.state.tree.get("children1") as ImmOMap)?.last() as ImmOMap)?.get("id")
       ];
 
@@ -292,33 +290,13 @@ export default class DemoQueryBuilder extends Component<{}, DemoQueryBuilderStat
         <div>
           {isValid ? null : <pre style={preErrorStyle}>{"Tree has errors"}</pre>}
           <br />
-          <div>
-          stringFormat: 
-            <pre style={preStyle}>
-              {stringify(queryString(immutableTree, config), undefined, 2)}
-            </pre>
-          </div>
           <hr/>
           <div>
-          humanStringFormat: 
-            <pre style={preStyle}>
-              {stringify(queryString(immutableTree, config, true), undefined, 2)}
-            </pre>
-          </div>
-          <hr/>
-          <div>
-          sqlFormat: 
-            <pre style={preStyle}>
-              {stringify(sqlFormat(immutableTree, config), undefined, 2)}
-            </pre>
-          </div>
-          <hr/>
-          <div>
-            <a href="http://jsonlogic.com/play.html" target="_blank" rel="noopener noreferrer">jsonLogicFormat</a>: 
-            { errors.length > 0 
+            <a href="http://jsonlogic.com/play.html" target="_blank" rel="noopener noreferrer">jsonLogicFormat</a>:
+            { errors.length > 0
               && <pre style={preErrorStyle}>
                 {stringify(errors, undefined, 2)}
-              </pre> 
+              </pre>
             }
             { !!logic
               && <pre style={preStyle}>
@@ -333,32 +311,18 @@ export default class DemoQueryBuilder extends Component<{}, DemoQueryBuilderStat
           </div>
           <hr/>
           <div>
-          mongodbFormat: 
-            <pre style={preStyle}>
-              {stringify(mongodbFormat(immutableTree, config), undefined, 2)}
-            </pre>
-          </div>
-          <hr/>
-          <div>
-          elasticSearchFormat: 
-            <pre style={preStyle}>
-              {stringify(elasticSearchFormat(immutableTree, config), undefined, 2)}
-            </pre>
-          </div>
-          <hr/>
-          <div>
-          Tree: 
+          Tree:
             <pre style={preStyle}>
               {stringify(getTree(immutableTree), undefined, 2)}
             </pre>
           </div>
-          {/* <hr/>
-        <div>
-          queryBuilderFormat: 
+          <hr/>
+          <div>
+          queryBuilderFormat:
             <pre style={preStyle}>
               {stringify(queryBuilderFormat(immutableTree, config), undefined, 2)}
             </pre>
-        </div> */}
+          </div>
         </div>
       );
     }

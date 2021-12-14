@@ -22,7 +22,7 @@ export default (className) => (GroupOrRule) =>
     handleDraggerMouseDown = (e) => {
       var nodeId = this.props.id;
       var dom = this.wrapper.current;
-        
+
       if (this.props.onDragStart) {
         this.props.onDragStart(nodeId, dom, e);
       }
@@ -37,6 +37,7 @@ export default (className) => (GroupOrRule) =>
       } = this.props;
       const {
         isTrueLocked,
+        selectedConjunction
       } = otherProps;
 
       let styles = {};
@@ -49,6 +50,8 @@ export default (className) => (GroupOrRule) =>
       }
 
       const cn = classNames(className, "group-or-rule",
+        selectedConjunction === "AND" && "group-or-rule-and",
+        selectedConjunction === "OR" && "group-or-rule-or",
         isDraggingMe && isDraggingTempo ? "qb-draggable" : null,
         isDraggingMe && !isDraggingTempo ? "qb-placeholder" : null,
         isTrueLocked ? "locked" : null
@@ -61,6 +64,7 @@ export default (className) => (GroupOrRule) =>
           ref={this.wrapper}
           data-id={this.props.id}
         >
+          {this.props.renderHeader}
           <GroupOrRule
             handleDraggerMouseDown={this.handleDraggerMouseDown}
             isDraggingMe={isDraggingMe}

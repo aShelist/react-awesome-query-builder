@@ -36,7 +36,7 @@ class RuleGroupExt extends BasicGroup {
   }
 
   childrenClassName = () => "rule_group_ext--children";
-  
+
   renderFooterWrapper = () => null;
   canAddGroup = () => false;
   canAddRule = () => true;
@@ -45,14 +45,14 @@ class RuleGroupExt extends BasicGroup {
   renderHeaderWrapper() {
     return (
       <div key="group-header" className={classNames(
-        "group--header", 
+        "group--header",
         this.isOneChild() ? "one--child" : "",
         this.showDragIcon() ? "with--drag" : "hide--drag",
         this.showConjs() && (!this.isOneChild() || this.showNot()) ? "with--conjs" : "hide--conjs"
       )}>
         {this.renderHeader()}
         {this.renderGroupField()}
-        {this.renderActions()}
+        {/*{this.renderActions()}*/}
       </div>
     );
   }

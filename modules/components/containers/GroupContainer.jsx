@@ -7,7 +7,7 @@ import {connect} from "react-redux";
 import {defaultGroupConjunction} from "../../utils/defaultUtils";
 
 
-const createGroupContainer = (Group) => 
+const createGroupContainer = (Group) =>
   class GroupContainer extends Component {
     static propTypes = {
       //tree: PropTypes.instanceOf(Immutable.Map).isRequired,
@@ -184,6 +184,7 @@ const createGroupContainer = (Group) =>
             <Group
               key={this.props.id}
               id={this.props.id}
+              renderHeader={this.props.renderHeader}
               groupId={this.props.groupId}
               isDraggingMe={isDraggingMe}
               isDraggingTempo={isInDraggingTempo}

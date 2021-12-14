@@ -7,7 +7,7 @@ import {connect} from "react-redux";
 const classNames = require("classnames");
 
 
-const createRuleContainer = (Rule) => 
+const createRuleContainer = (Rule) =>
   class RuleContainer extends Component {
     static propTypes = {
       id: PropTypes.string.isRequired,
@@ -34,7 +34,7 @@ const createRuleContainer = (Rule) =>
 
     constructor(props) {
       super(props);
-      
+
       this.dummyFn.isDummyFn = true;
     }
 
@@ -115,6 +115,7 @@ const createRuleContainer = (Rule) =>
               key={"dragging"}
               id={this.props.id}
               groupId={this.props.groupId}
+              renderHeader={this.props.renderHeader}
               isDraggingMe={true}
               isDraggingTempo={true}
               dragging={this.props.dragging}
@@ -144,6 +145,7 @@ const createRuleContainer = (Rule) =>
               key={this.props.id}
               id={this.props.id}
               groupId={this.props.groupId}
+              renderHeader={this.props.renderHeader}
               isDraggingMe={isDraggingMe}
               isDraggingTempo={isInDraggingTempo}
               onDragStart={this.props.onDragStart}
