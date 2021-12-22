@@ -108,8 +108,8 @@ export const mongoFormatOp2 = (mops, not,  field, _op, values, useExpr, valueSrc
 
 const operators = {
   equal: {
-    label: "==",
-    labelForFormat: "==",
+    label: "=",
+    labelForFormat: "=",
     sqlOp: "=",
     reversedOp: "not_equal",
     formatOp: (field, op, value, valueSrcs, valueTypes, opDef, operatorOptions, isForDisplay, fieldDef) => {
@@ -120,7 +120,7 @@ const operators = {
         return `${field} ${opStr} ${value}`;
     },
     mongoFormatOp: mongoFormatOp1.bind(null, "$eq", v => v, false),
-    jsonLogic: "==",
+    jsonLogic: "=",
     elasticSearchQueryType: "term",
   },
   not_equal: {

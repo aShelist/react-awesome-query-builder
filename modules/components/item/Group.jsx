@@ -235,6 +235,9 @@ export class BasicGroup extends PureComponent {
       <Item
         {...this.extraPropsForItem(item)}
         renderHeader={ index + 1 === length ? this.renderActions() : <div />}
+        addRuleAfterThis={props.addRule}
+        addGroupAfterThis={props.addGroup}
+        countRules={length}
         key={item.get("id")}
         id={item.get("id")}
         groupId={props.id}

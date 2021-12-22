@@ -44,9 +44,6 @@ export class GroupActions extends PureComponent {
       </Menu>
     );
 
-
-
-
     return (
       <div className={`group--actions ${position}`}>
         <Dropdown

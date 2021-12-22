@@ -39,13 +39,14 @@ const typeMap = {
       parentField={props.parentField}
 
       renderHeader={props.renderHeader}
-      test={'test'}
+      countRules={props.countRules}
+      addRuleAfterThis={props.addRuleAfterThis}
+      addGroupAfterThis={props.addGroupAfterThis}
     />
   ),
   group: (props) => (
     <Group
       {...getProperties(props)}
-      renderHeader={props.renderHeader}
       id={props.id}
       groupId={props.groupId}
       path={props.path}
@@ -57,8 +58,11 @@ const typeMap = {
       onDragStart={props.onDragStart}
       isDraggingTempo={props.isDraggingTempo}
       children1={props.children1}
-      test={'test'}
       parentField={null}
+      renderHeader={props.renderHeader}
+      countRules={props.countRules}
+      addRuleAfterThis={props.addRuleAfterThis}
+      addGroupAfterThis={props.addGroupAfterThis}
     />
   ),
   rule_group: (props) => (
@@ -66,8 +70,6 @@ const typeMap = {
       {...getProperties(props)}
       id={props.id}
       groupId={props.groupId}
-      test={'test'}
-      renderHeader={props.renderHeader}
       path={props.path}
       actions={props.actions}
       config={props.config}
@@ -78,6 +80,11 @@ const typeMap = {
       isDraggingTempo={props.isDraggingTempo}
       children1={props.children1}
       parentField={props.parentField}
+
+      renderHeader={props.renderHeader}
+      countRules={props.countRules}
+      addRuleAfterThis={props.addRuleAfterThis}
+      addGroupAfterThis={props.addGroupAfterThis}
     />
   ),
   rule_group_ext: (props) => (
@@ -85,8 +92,6 @@ const typeMap = {
       {...getProperties(props)}
       id={props.id}
       groupId={props.groupId}
-      test={'test'}
-      renderHeader={props.renderHeader}
       path={props.path}
       actions={props.actions}
       config={props.config}
@@ -97,6 +102,11 @@ const typeMap = {
       isDraggingTempo={props.isDraggingTempo}
       children1={props.children1}
       parentField={props.parentField}
+
+      renderHeader={props.renderHeader}
+      countRules={props.countRules}
+      addRuleAfterThis={props.addRuleAfterThis}
+      addGroupAfterThis={props.addGroupAfterThis}
     />
   ),
 };

@@ -344,7 +344,7 @@ export interface ConjunctionOption {
 }
 
 export interface ConjsProps {
-  id: string, 
+  id: string,
   readonly?: boolean,
   disabled?: boolean,
   selectedConjunction?: string,
@@ -363,8 +363,8 @@ export interface ConjsProps {
 /////////////////
 
 export interface ButtonProps {
-  type: "addRule" | "addGroup" | "delRule" | "delGroup"  | "addRuleGroup" | "delRuleGroup", 
-  onClick(): void, 
+  type: "addRule" | "addGroup" | "delRule" | "delGroup"  | "addRuleGroup" | "delRuleGroup",
+  onClick(): void,
   label: string,
   config?: Config,
   readonly?: boolean,
@@ -390,23 +390,23 @@ export interface ProviderProps {
 }
 
 export type ValueSourceItem = {
-  label: string, 
+  label: string,
 }
 type ValueSourcesItems = TypedValueSourceMap<ValueSourceItem>;
 
 export interface ValueSourcesProps {
   config?: Config,
-  valueSources: ValueSourcesItems, 
-  valueSrc?: ValueSource, 
-  setValueSrc(valueSrc: string): void, 
+  valueSources: ValueSourcesItems,
+  valueSrc?: ValueSource,
+  setValueSrc(valueSrc: string): void,
   readonly?: boolean,
   title: string,
 }
 
 export interface ConfirmModalProps {
-  onOk(): void, 
-  okText: string, 
-  cancelText?: string, 
+  onOk(): void,
+  okText: string,
+  cancelText?: string,
   title: string,
 }
 
@@ -626,12 +626,12 @@ export type Fields = TypedMap<FieldOrGroup>;
 /////////////////
 
 export type FieldItem = {
-  items?: FieldItems, 
-  key: string, 
+  items?: FieldItems,
+  key: string,
   path?: string, // field path with separator
-  label: string, 
-  fullLabel?: string, 
-  altLabel?: string, 
+  label: string,
+  fullLabel?: string,
+  altLabel?: string,
   tooltip?: string,
   disabled?: boolean,
 }
@@ -761,6 +761,7 @@ export interface BehaviourSettings {
   showErrorMessage?: boolean,
   canShortMongoQuery?: boolean,
   convertableWidgets?: TypedMap<Array<string>>,
+  compositeMode?: boolean
 }
 
 export interface OtherSettings {

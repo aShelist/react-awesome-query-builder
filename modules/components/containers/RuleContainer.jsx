@@ -139,6 +139,9 @@ const createRuleContainer = (Rule) =>
               asyncListValues={this.props.asyncListValues}
               isLocked={this.props.isLocked}
               isTrueLocked={this.props.isTrueLocked}
+              countRules={this.props.countRules}
+              addRuleAfterThis={this.dummyFn}
+              addGroupAfterThis={this.dummyFn}
             /> : null
             ,
             <Rule
@@ -169,6 +172,9 @@ const createRuleContainer = (Rule) =>
               asyncListValues={this.props.asyncListValues}
               isLocked={this.props.isLocked}
               isTrueLocked={this.props.isTrueLocked}
+              countRules={this.props.countRules}
+              addRuleAfterThis={this.props.addRuleAfterThis}
+              addGroupAfterThis={this.props.addGroupAfterThis}
             />
           ]}
         </div>

@@ -5,6 +5,8 @@ import {fixPathsInTree} from "../utils/treeUtils";
 import {immutableEqual} from "../utils/stuff";
 import {useOnPropsChanged, bindActionCreators} from "../utils/reactUtils";
 import {validateTree} from "../utils/validation";
+import "@vkontakte/vkui/dist/vkui.css";
+
 
 
 export const validateAndFixTree = (newTree, _oldTree, newConfig, oldConfig) => {

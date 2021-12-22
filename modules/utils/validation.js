@@ -29,7 +29,7 @@ export const validateTree = (tree, _oldTree, config, oldConfig, removeEmptyGroup
   return validateItem(tree, [], null, {}, c);
 };
 
-function validateItem (item, path, itemId, meta, c) {
+export function validateItem (item, path, itemId, meta, c) {
   const type = item.get("type");
   const children = item.get("children1");
 
@@ -74,7 +74,7 @@ function validateGroup (item, path, itemId, meta, c) {
 }
 
 
-function validateRule (item, path, itemId, meta, c) {
+export function validateRule (item, path, itemId, meta, c) {
   const {removeInvalidRules, config, oldConfig} = c;
   const {showErrorMessage} = config.settings;
   let id = item.get("id");
@@ -192,7 +192,7 @@ function validateRule (item, path, itemId, meta, c) {
 
 
 /**
- * 
+ *
  * @param {bool} canFix true is useful for func values to remove bad args
  * @param {bool} isEndValue false if value is in process of editing by user
  * @param {bool} isRawValue false is used only internally from validateFuncValue
@@ -221,7 +221,7 @@ export const validateValue = (config, leftField, field, operator, value, valueTy
       const fn = fieldWidgetDefinition.validateValue;
       if (typeof fn == "function") {
         const args = [
-          fixedValue, 
+          fixedValue,
           fieldSettings,
         ];
         if (valueSrc == "field")
@@ -266,9 +266,16 @@ const validateValueInList = (value, listValues) => {
 };
 
 /**
-* 
+*
 */
 const validateNormalValue = (leftField, field, value, valueSrc, valueType, asyncListValues, config, operator = null, isEndValue = false, canFix = false) => {
+  const { compositeMode } = config.settings;
+
+  if (compositeMode) {
+
+    return [null, value];
+  }
+
   let fixedValue = value;
   const fieldConfig = getFieldConfig(config, field);
   const w = getWidgetForFieldOp(config, field, operator, valueSrc);
@@ -301,7 +308,7 @@ const validateNormalValue = (leftField, field, value, valueSrc, valueType, async
 
 
 /**
-* 
+*
 */
 const validateFieldValue = (leftField, field, value, _valueSrc, valueType, asyncListValues, config, operator = null, isEndValue = false, canFix = false) => {
   const {fieldSeparator} = config.settings;
@@ -318,7 +325,7 @@ const validateFieldValue = (leftField, field, value, _valueSrc, valueType, async
 };
 
 /**
-* 
+*
 */
 const validateFuncValue = (leftField, field, value, _valueSrc, valueType, asyncListValues, config, operator = null, isEndValue = false, canFix = false) => {
   let fixedValue = value;

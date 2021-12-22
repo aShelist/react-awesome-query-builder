@@ -1,5 +1,6 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
+import { SliderSwitch } from "@vkontakte/vkui";
 import RuleContainer from "../containers/RuleContainer";
 import Draggable from "../containers/Draggable";
 import OperatorWrapper from "../rule/OperatorWrapper";
@@ -10,6 +11,10 @@ import {getFieldConfig, getOperatorConfig, getFieldWidgetConfig} from "../../uti
 import {getFieldPathLabels, getValueSourcesForFieldOp} from "../../utils/ruleUtils";
 import {useOnPropsChanged} from "../../utils/reactUtils";
 import {Col, DragIcon, dummyFn, ConfirmFn} from "../utils";
+import { Button, Dropdown, Menu } from "antd";
+import { EllipsisOutlined } from "@ant-design/icons";
+import { IconAddGroup, IconCheck, IconPencil, IconPlus, IconTrash, IconCancel } from "../icons";
+import Immutable from "immutable";
 const classNames = require("classnames");
 
 
@@ -53,6 +58,14 @@ class Rule extends PureComponent {
       this.setLock = this.setLock.bind(this);
 
       this.onPropsChanged(props);
+
+      this.state = {
+        value: null,
+        field: null,
+        operator: null,
+        setValueData: [],
+        error: ''
+      };
     }
 
     onPropsChanged(nextProps) {
@@ -62,6 +75,28 @@ class Rule extends PureComponent {
 
       if (needUpdateMeta) {
         this.meta = this.getMeta(nextProps);
+      }
+    }
+
+    componentDidMount() {
+      const { config, value } = this.props;
+      const { compositeMode } = config.settings;
+
+      if (compositeMode && !value.get(0)) {
+        this.props.setValue(0, 'include', 'text');
+      }
+    }
+
+    componentDidUpdate(prevProps) {
+      const { isLocked, value, selectedField, selectedOperator } = this.props;
+
+      if (prevProps.isLocked && !isLocked) {
+        this.setState({
+          value: value.get(0),
+          operator: selectedOperator,
+          field: selectedField,
+          setValueData: []
+        });
       }
     }
 
@@ -91,6 +126,28 @@ class Rule extends PureComponent {
       this.props.setLock(lock);
     }
 
+    saveField = () => {
+      this.clearError();
+      if (this.validateRule()) {
+        this.props.setField(this.state.field);
+        this.props.setOperator(this.state.operator);
+        if (this.state.setValueData.length > 0) {
+          this.props.setValue(...this.state.setValueData);
+        }
+        this.closeEditField();
+      }
+    }
+
+    closeEditField = () => {
+      this.clearError();
+      this.setState({
+        value: null,
+        operator: null,
+        field: null
+      });
+      this.props.setLock(true);
+    }
+
     removeSelf() {
       const {confirmFn} = this.props;
       const {renderConfirm, removeRuleConfirmOptions: confirmOptions} = this.props.config.settings;
@@ -116,13 +173,44 @@ class Rule extends PureComponent {
       );
     }
 
+    validateRule = () => {
+      const { config } = this.props;
+      const { value, field, operator } = this.state;
+      const { compositeMode } = config.settings;
+
+      if (!value || !field || (!operator && compositeMode)) {
+        this.setState({
+          error: 'Необходимо заполнить все поля'
+        });
+        return false;
+      }
+
+      return true;
+    }
+
+    clearError = () => this.setState({ error: '' });
+
     renderField() {
       const {config, isLocked} = this.props;
-      const { immutableFieldsMode } = config.settings;
+      const { immutableFieldsMode, compositeMode } = config.settings;
+
+      if (!isLocked) {
+        return <FieldWrapper
+          key="field"
+          classname={classNames("rule--field", compositeMode && "rule--field_composite")}
+          config={config}
+          selectedField={this.state.field}
+          setField={!immutableFieldsMode ? this.setField : dummyFn}
+          parentField={this.props.parentField}
+          readonly={immutableFieldsMode || isLocked}
+          id={this.props.id}
+          groupId={this.props.groupId}
+        />;
+      }
 
       return <FieldWrapper
         key="field"
-        classname={"rule--field"}
+        classname={classNames("rule--field", compositeMode && "rule--field_composite")}
         config={config}
         selectedField={this.props.selectedField}
         setField={!immutableFieldsMode ? this.props.setField : dummyFn}
@@ -133,12 +221,72 @@ class Rule extends PureComponent {
       />;
     }
 
+
+    renderSwitcher () {
+      const values = {
+        include: "Включая сегмент",
+        exclude: "Исключая сегмент"
+      };
+
+      const { isLocked, value } = this.props;
+      const val = value.get(0);
+
+      if (isLocked) {
+        return <div className={
+          classNames(
+            "segment",
+            val === "include" && "segment_include",
+            val === "exclude" && "segment_exclude"
+          )
+        }>
+          {values[val]}
+        </div>;
+      }
+
+      return (
+        <div className="rule-switcher">
+          <SliderSwitch
+            onSwitch={value => this.props.setValue(0, value, 'text')}
+            activeValue={val}
+            options={Object.keys(values).map(value => ({ name: values[value], value }))}
+          />
+        </div>
+      );
+
+    }
+
+    setOperator = (operator) => {
+      this.clearError();
+      this.setState({ operator });
+    }
+    setField = (field) => {
+      this.clearError();
+      this.setState({ field });
+    }
+
     renderOperator () {
       const {config, isLocked} = this.props;
       const {
         selectedFieldPartsLabels, selectedFieldWidgetConfig, showOperator, showOperatorLabel
       } = this.meta;
       const { immutableOpsMode } = config.settings;
+
+      if (!isLocked) {
+        return <OperatorWrapper
+          key="operator"
+          config={config}
+          selectedField={this.props.selectedField}
+          selectedOperator={this.state.operator}
+          setOperator={!immutableOpsMode ? this.setOperator : dummyFn}
+          selectedFieldPartsLabels={selectedFieldPartsLabels}
+          showOperator={showOperator}
+          showOperatorLabel={showOperatorLabel}
+          selectedFieldWidgetConfig={selectedFieldWidgetConfig}
+          readonly={immutableOpsMode || isLocked}
+          id={this.props.id}
+          groupId={this.props.groupId}
+        />;
+      }
 
       return <OperatorWrapper
         key="operator"
@@ -156,28 +304,59 @@ class Rule extends PureComponent {
       />;
     }
 
+    setValue = (...props) => {
+      this.clearError();
+      this.setState({
+        value: props[1],
+        setValueData: props
+      });
+    }
+
     renderWidget() {
       const {config, valueError, isLocked} = this.props;
       const { showWidget } = this.meta;
       const { immutableValuesMode } = config.settings;
       if (!showWidget) return null;
 
-      const widget = <Widget
-        key="values"
-        field={this.props.selectedField}
-        parentField={this.props.parentField}
-        operator={this.props.selectedOperator}
-        value={this.props.value}
-        valueSrc={this.props.valueSrc}
-        asyncListValues={this.props.asyncListValues}
-        valueError={valueError}
-        config={config}
-        setValue={!immutableValuesMode ? this.props.setValue : dummyFn}
-        setValueSrc={!immutableValuesMode ? this.props.setValueSrc : dummyFn}
-        readonly={immutableValuesMode || isLocked}
-        id={this.props.id}
-        groupId={this.props.groupId}
-      />;
+      let widget;
+      if (!isLocked) {
+
+        widget = <Widget
+          key="values"
+          field={this.props.selectedField}
+          parentField={this.props.parentField}
+          operator={this.props.selectedOperator}
+          value={new Immutable.List([ this.state.value ])}
+          valueSrc={this.props.valueSrc}
+          asyncListValues={this.props.asyncListValues}
+          valueError={valueError}
+          config={config}
+          setValue={this.setValue}
+          setValueSrc={!immutableValuesMode ? this.props.setValueSrc : dummyFn}
+          readonly={immutableValuesMode || isLocked}
+          id={this.props.id}
+          groupId={this.props.groupId}
+        />;
+      } else {
+        widget = <Widget
+          key="values"
+          field={this.props.selectedField}
+          parentField={this.props.parentField}
+          operator={this.props.selectedOperator}
+          value={this.props.value}
+          valueSrc={this.props.valueSrc}
+          asyncListValues={this.props.asyncListValues}
+          valueError={valueError}
+          config={config}
+          setValue={dummyFn}
+          setValueSrc={!immutableValuesMode ? this.props.setValueSrc : dummyFn}
+          readonly={immutableValuesMode || isLocked}
+          id={this.props.id}
+          groupId={this.props.groupId}
+        />;
+      }
+
+
 
       return (
         <Col key={"widget-for-"+this.props.selectedOperator} className="rule--value">
@@ -212,7 +391,7 @@ class Rule extends PureComponent {
     renderBeforeWidget() {
       const {config} = this.props;
       const { renderBeforeWidget } = config.settings;
-      return renderBeforeWidget 
+      return renderBeforeWidget
         && <Col key={"before-widget-for-" +this.props.selectedOperator} className="rule--before-widget">
           {typeof renderBeforeWidget === "function" ? renderBeforeWidget(this.props) : renderBeforeWidget}
         </Col>;
@@ -221,7 +400,7 @@ class Rule extends PureComponent {
     renderAfterWidget() {
       const {config} = this.props;
       const { renderAfterWidget } = config.settings;
-      return renderAfterWidget 
+      return renderAfterWidget
         && <Col key={"after-widget-for-" +this.props.selectedOperator} className="rule--after-widget">
           {typeof renderAfterWidget === "function" ? renderAfterWidget(this.props) : renderAfterWidget}
         </Col>;
@@ -229,9 +408,15 @@ class Rule extends PureComponent {
 
     renderError() {
       const {config, valueError} = this.props;
+      const { error } = this.state;
+      if (error) {
+        return <div className="rule--error">
+          {error}
+        </div>
+      }
       const { renderRuleError, showErrorMessage } = config.settings;
       const oneValueError = valueError && valueError.toArray().filter(e => !!e).shift() || null;
-      return showErrorMessage && oneValueError 
+      return showErrorMessage && oneValueError
         && <div className="rule--error">
           {renderRuleError ? renderRuleError({error: oneValueError}) : oneValueError}
         </div>;
@@ -249,32 +434,28 @@ class Rule extends PureComponent {
     }
 
     renderDel() {
-      const {config, isLocked} = this.props;
-      const {
-        deleteLabel, 
-        immutableGroupsMode, 
-        renderButton: Btn,
-        canDeleteLocked
-      } = config.settings;
+      const {countRules, addRuleAfterThis, addGroupAfterThis, setLock, isLocked} = this.props;
 
-      return !immutableGroupsMode && (!isLocked || isLocked && canDeleteLocked) && (
-        <Btn 
-          type="delRule" onClick={this.removeSelf} label={deleteLabel} config={config}
-        />
+      const menu = (
+        <Menu>
+          {isLocked && <Button onClick={() => setLock(false)} className="rule-btn" icon={<IconPencil />} />}
+          <Button onClick={() => addRuleAfterThis()} className="rule-btn" icon={<IconPlus />} />
+          <Button onClick={() => addGroupAfterThis()} className="rule-btn" icon={<IconAddGroup />} />
+          {countRules > 1 && (<Button className="rule-btn" onClick={this.removeSelf}  icon={<IconTrash />} />)}
+        </Menu>
       );
-    }
 
-    renderLock() {
-      const {config, isLocked, isTrueLocked, id} = this.props;
-      const {
-        lockLabel, lockedLabel, showLock,
-        renderSwitch: Switch
-      } = config.settings;
-      
-      return showLock && !(isLocked && !isTrueLocked) && (
-        <Switch 
-          type="lock" id={id} value={isLocked} setValue={this.setLock} label={lockLabel} checkedLabel={lockedLabel} hideLabel={true} config={config}
-        />
+      return (
+        <>
+          {!isLocked && <Button onClick={this.saveField} className="group--actions__dropdown" icon={<IconCheck  />} />}
+          {!isLocked && <Button onClick={this.closeEditField} className="group--actions__dropdown" icon={<IconCancel  />} />}
+          <Dropdown
+            overlay={menu}
+            overlayClassName="rule-dropdown"
+          >
+            <Button className="group--actions__dropdown" icon={<EllipsisOutlined  />} />
+          </Dropdown>
+        </>
       );
     }
 
@@ -282,23 +463,24 @@ class Rule extends PureComponent {
       const { showOperatorOptions, selectedFieldWidgetConfig } = this.meta;
       const { valueSrc, value, config } = this.props;
       const canShrinkValue = valueSrc.first() == "value" && !showOperatorOptions && value.size == 1 && selectedFieldWidgetConfig.fullWidth;
-      const { renderButtonGroup: BtnGrp } = config.settings;
+      const { renderButtonGroup: BtnGrp, compositeMode } = config.settings;
+
 
       const parts = [
+        compositeMode && this.renderSwitcher(),
         this.renderField(),
-        this.renderOperator(),
-        this.renderBeforeWidget(),
-        this.renderWidget(),
-        this.renderAfterWidget(),
-        this.renderOperatorOptions(),
+        !compositeMode && this.renderOperator(),
+        !compositeMode && this.renderBeforeWidget(),
+        !compositeMode && this.renderWidget(),
+        !compositeMode && this.renderAfterWidget(),
+        !compositeMode && this.renderOperatorOptions(),
       ];
       const body = <div key="rule-body" className={classNames("rule--body", canShrinkValue && "can--shrink--value")}>{parts}</div>;
 
       const error = this.renderError();
       const drag = this.renderDrag();
-      const lock = this.renderLock();
       const del = this.renderDel();
-      
+
       return (
         <>
           {drag}
@@ -307,7 +489,6 @@ class Rule extends PureComponent {
           </div>
           <div className="rule--header">
             <BtnGrp config={config}>
-              {lock}
               {del}
             </BtnGrp>
           </div>

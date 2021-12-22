@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import merge from "lodash/merge";
 import {
-  BasicConfig, BasicFuncs, Utils,
+  BasicConfig, BasicFuncs,
   // types:
   Operators, Widgets, Fields, Config, Types, Conjunctions, Settings, LocaleSettings, OperatorProximity, Funcs,
   DateTimeFieldSettings,
@@ -19,7 +19,6 @@ const {
   FieldCascader,
   FieldTreeSelect,
 } = AntdWidgets;
-const {simulateAsyncFetch} = Utils;
 
 const skinToConfig: Record<string, Config> = {
   vanilla: BasicConfig,
@@ -45,53 +44,33 @@ export default (skin: string) => {
     {title: "I", value: "i"},
     {title: "J", value: "j"},
   ];
-  const simulatedAsyncFetch = simulateAsyncFetch(demoListValues, 3);
 
   const conjunctions: Conjunctions = {
     ...InitialConfig.conjunctions,
   };
 
-  const proximity: OperatorProximity = {
-    ...InitialConfig.operators.proximity,
-    valueLabels: [
-      { label: "Word 1", placeholder: "Enter first word" },
-      { label: "Word 2", placeholder: "Enter second word" },
-    ],
-    textSeparators: [
-      //'Word 1',
-      //'Word 2'
-    ],
-    options: {
-      ...InitialConfig.operators.proximity.options,
-      optionLabel: "Near", // label on top of "near" selectbox (for config.settings.showLabels==true)
-      optionTextBefore: "Near", // label before "near" selectbox (for config.settings.showLabels==false)
-      optionPlaceholder: "Select words between", // placeholder for "near" selectbox
-      minProximity: 2,
-      maxProximity: 10,
-      defaults: {
-        proximity: 2
-      },
-      customProps: {}
-    }
-  };
-
   const operators: Operators = {
-    ...InitialConfig.operators,
-    // examples of  overriding
-    proximity,
-    between: {
-      ...InitialConfig.operators.between,
-      valueLabels: [
-        "Value from",
-        "Value to"
-      ],
-      textSeparators: [
-        "from",
-        "to"
-      ],
+    equal: {
+      ...InitialConfig.operators.equal,
+    },
+    less: {
+      ...InitialConfig.operators.less,
+    },
+    greater: {
+      ...InitialConfig.operators.greater,
+    },
+    not_equal: {
+      ...InitialConfig.operators.not_equal,
+    },
+    is_empty: {
+      ...InitialConfig.operators.not_equal,
+      label: 'Пусто'
+    },
+    is_not_empty: {
+      ...InitialConfig.operators.not_equal,
+      label: 'Не пусто'
     },
   };
-
 
   const widgets: Widgets = {
     ...InitialConfig.widgets,
@@ -242,13 +221,14 @@ export default (skin: string) => {
     showLock: false,
     // showNot: true,
     // showLabels: true,
-    maxNesting: 5,
+    // maxNesting: 5,
     canLeaveEmptyGroup: true,
     shouldCreateEmptyGroup: false,
     showErrorMessage: true,
     customFieldSelectProps: {
       showSearch: true
     },
+    // compositeMode: true,
     // renderField: (props) => <FieldCascader {...props} />,
     // renderOperator: (props) => <FieldDropdown {...props} />,
     // renderFunc: (props) => <FieldSelect {...props} />,
@@ -265,6 +245,32 @@ export default (skin: string) => {
     pet: {
       label: "Питомец",
       type: "text",
+    },
+    balance: {
+      label: "Баланс",
+      type: "number",
+    },
+    city: {
+      label: "Город",
+      type: "text",
+    },
+    age: {
+      label: "Возраст",
+      type: "number",
+    },
+
+    date: {
+      label: "Дата рождения",
+      type: "date",
+      valueSources: ["value"],
+      fieldSettings: {
+        dateFormat: "DD-MM-YYYY",
+        validateValue: (val, fieldSettings: DateTimeFieldSettings) => {
+          // example of date validation
+          const dateVal = moment(val, fieldSettings.valueFormat);
+          return dateVal.year() != (new Date().getFullYear()) ? "Please use current year" : null;
+        },
+      },
     },
   };
 
