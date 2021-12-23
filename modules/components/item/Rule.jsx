@@ -62,9 +62,10 @@ class Rule extends PureComponent {
       this.state = {
         value: null,
         field: null,
-        operator: null,
+        operator: 'equal',
         setValueData: [],
-        error: ''
+        error: '',
+        isNew: false
       };
     }
 
@@ -85,6 +86,9 @@ class Rule extends PureComponent {
       if (compositeMode && !value.get(0)) {
         this.props.setValue(0, 'include', 'text');
       }
+      if (!value.get(0)) {
+        this.setState({ isNew: true });
+      }
     }
 
     componentDidUpdate(prevProps) {
@@ -93,9 +97,10 @@ class Rule extends PureComponent {
       if (prevProps.isLocked && !isLocked) {
         this.setState({
           value: value.get(0),
-          operator: selectedOperator,
+          operator: selectedOperator || 'equal',
           field: selectedField,
-          setValueData: []
+          setValueData: [],
+          isNew: !value.get(0) && !selectedOperator && !selectedField
         });
       }
     }
@@ -142,8 +147,9 @@ class Rule extends PureComponent {
       this.clearError();
       this.setState({
         value: null,
-        operator: null,
-        field: null
+        operator: 'equal',
+        field: null,
+        isNew: false
       });
       this.props.setLock(true);
     }
@@ -275,11 +281,11 @@ class Rule extends PureComponent {
         return <OperatorWrapper
           key="operator"
           config={config}
-          selectedField={this.props.selectedField}
+          selectedField={this.state.field || this.props.selectedField}
           selectedOperator={this.state.operator}
-          setOperator={!immutableOpsMode ? this.setOperator : dummyFn}
+          setOperator={this.setOperator}
           selectedFieldPartsLabels={selectedFieldPartsLabels}
-          showOperator={showOperator}
+          showOperator={!!this.state.field}
           showOperatorLabel={showOperatorLabel}
           selectedFieldWidgetConfig={selectedFieldWidgetConfig}
           readonly={immutableOpsMode || isLocked}
@@ -293,7 +299,7 @@ class Rule extends PureComponent {
         config={config}
         selectedField={this.props.selectedField}
         selectedOperator={this.props.selectedOperator}
-        setOperator={!immutableOpsMode ? this.props.setOperator : dummyFn}
+        setOperator={dummyFn}
         selectedFieldPartsLabels={selectedFieldPartsLabels}
         showOperator={showOperator}
         showOperatorLabel={showOperatorLabel}
@@ -316,16 +322,16 @@ class Rule extends PureComponent {
       const {config, valueError, isLocked} = this.props;
       const { showWidget } = this.meta;
       const { immutableValuesMode } = config.settings;
-      if (!showWidget) return null;
+      if (!showWidget && !isLocked && !this.state.field) return null;
 
       let widget;
-      if (!isLocked) {
+      if (!isLocked && this.state.field) {
 
         widget = <Widget
           key="values"
-          field={this.props.selectedField}
+          field={this.state.field}
           parentField={this.props.parentField}
-          operator={this.props.selectedOperator}
+          operator={this.state.operator}
           value={new Immutable.List([ this.state.value ])}
           valueSrc={this.props.valueSrc}
           asyncListValues={this.props.asyncListValues}
@@ -365,47 +371,6 @@ class Rule extends PureComponent {
       );
     }
 
-    renderOperatorOptions() {
-      const {config} = this.props;
-      const { showOperatorOptions } = this.meta;
-      const { immutableOpsMode, immutableValuesMode } = config.settings;
-      if (!showOperatorOptions) return null;
-
-      const opOpts = <OperatorOptions
-        key="operatorOptions"
-        selectedField={this.props.selectedField}
-        selectedOperator={this.props.selectedOperator}
-        operatorOptions={this.props.operatorOptions}
-        setOperatorOption={!immutableOpsMode ? this.props.setOperatorOption : dummyFn}
-        config={config}
-        readonly={immutableValuesMode}
-      />;
-
-      return (
-        <Col key={"op-options-for-"+this.props.selectedOperator} className="rule--operator-options">
-          {opOpts}
-        </Col>
-      );
-    }
-
-    renderBeforeWidget() {
-      const {config} = this.props;
-      const { renderBeforeWidget } = config.settings;
-      return renderBeforeWidget
-        && <Col key={"before-widget-for-" +this.props.selectedOperator} className="rule--before-widget">
-          {typeof renderBeforeWidget === "function" ? renderBeforeWidget(this.props) : renderBeforeWidget}
-        </Col>;
-    }
-
-    renderAfterWidget() {
-      const {config} = this.props;
-      const { renderAfterWidget } = config.settings;
-      return renderAfterWidget
-        && <Col key={"after-widget-for-" +this.props.selectedOperator} className="rule--after-widget">
-          {typeof renderAfterWidget === "function" ? renderAfterWidget(this.props) : renderAfterWidget}
-        </Col>;
-    }
-
     renderError() {
       const {config, valueError} = this.props;
       const { error } = this.state;
@@ -435,6 +400,7 @@ class Rule extends PureComponent {
 
     renderDel() {
       const {countRules, addRuleAfterThis, addGroupAfterThis, setLock, isLocked} = this.props;
+      const { isNew } = this.state;
 
       const menu = (
         <Menu>
@@ -448,7 +414,7 @@ class Rule extends PureComponent {
       return (
         <>
           {!isLocked && <Button onClick={this.saveField} className="group--actions__dropdown" icon={<IconCheck  />} />}
-          {!isLocked && <Button onClick={this.closeEditField} className="group--actions__dropdown" icon={<IconCancel  />} />}
+          {!isLocked && !(isNew && countRules === 1) && <Button onClick={isNew ? this.removeSelf : this.closeEditField} className="group--actions__dropdown" icon={<IconCancel  />} />}
           <Dropdown
             overlay={menu}
             overlayClassName="rule-dropdown"
@@ -470,10 +436,7 @@ class Rule extends PureComponent {
         compositeMode && this.renderSwitcher(),
         this.renderField(),
         !compositeMode && this.renderOperator(),
-        !compositeMode && this.renderBeforeWidget(),
         !compositeMode && this.renderWidget(),
-        !compositeMode && this.renderAfterWidget(),
-        !compositeMode && this.renderOperatorOptions(),
       ];
       const body = <div key="rule-body" className={classNames("rule--body", canShrinkValue && "can--shrink--value")}>{parts}</div>;
 

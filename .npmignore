@@ -5,6 +5,7 @@
 /sandbox/build/
 /sandbox/dist/
 /sandbox_simple/build/
+/node_modules/
 ts_out/
 node_modules/
 package-lock.json

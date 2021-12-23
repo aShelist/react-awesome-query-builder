@@ -1,6 +1,6 @@
 {
   "name": "cxhub-query-builder",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "User-friendly query builder for React. Demo: https://ukrbublik.github.io/react-awesome-query-builder",
   "keywords": [
     "query-builder",
@@ -65,15 +65,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ukrbublik/react-awesome-query-builder.git"
+    "url": "https://github.com/aShelist/react-awesome-query-builder"
   },
   "author": "Denis Oblogin <ukrbublik@gmail.com> (https://github.com/ukrbublik)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ukrbublik/react-awesome-query-builder/issues"
+    "url": "https://github.com/aShelist/react-awesome-query-builder/issues"
   },
-  "homepage": "https://github.com/ukrbublik/react-awesome-query-builder",
-  "funding": "https://opencollective.com/react-awesome-query-builder",
+  "homepage": "https://github.com/aShelist/react-awesome-query-builder",
   "engines": {
     "node": ">=12.13",
     "npm": ">=6"
