@@ -2,9 +2,8 @@ import React from "react";
 import { Button } from "antd";
 const ButtonGroup = Button.Group;
 
-export default ({children, config: {settings}}) => {
-  const {renderSize} = settings;
+export default ({ children }) => {
   return <ButtonGroup
-    size={renderSize}
+    size={"middle"}
   >{children}</ButtonGroup>;
 };

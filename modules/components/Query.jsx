@@ -6,6 +6,7 @@ import {immutableEqual} from "../utils/stuff";
 import {useOnPropsChanged, bindActionCreators} from "../utils/reactUtils";
 import {validateTree} from "../utils/validation";
 import "@vkontakte/vkui/dist/vkui.css";
+import { getTree } from '../import';
 
 
 
@@ -30,6 +31,8 @@ export default class Query extends PureComponent {
       useOnPropsChanged(this);
 
       this._updateActions(props);
+
+      console.log('constructor', props, getTree(props.tree));
 
       this.validatedTree = this.validateTree(props, props);
       //props.onChange && props.onChange(this.validatedTree, props.config);

@@ -228,7 +228,7 @@ export default (skin: string) => {
     customFieldSelectProps: {
       showSearch: true
     },
-    // compositeMode: true,
+    compositeMode: true,
     // renderField: (props) => <FieldCascader {...props} />,
     // renderOperator: (props) => <FieldDropdown {...props} />,
     // renderFunc: (props) => <FieldSelect {...props} />,

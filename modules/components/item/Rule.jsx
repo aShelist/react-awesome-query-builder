@@ -62,9 +62,9 @@ class Rule extends PureComponent {
       this.state = {
         value: null,
         field: null,
-        operator: 'equal',
+        operator: "equal",
         setValueData: [],
-        error: '',
+        error: "",
         isNew: false
       };
     }
@@ -80,11 +80,14 @@ class Rule extends PureComponent {
     }
 
     componentDidMount() {
-      const { config, value } = this.props;
+      const { config, value, isLocked } = this.props;
       const { compositeMode } = config.settings;
 
-      if (compositeMode && !value.get(0)) {
-        this.props.setValue(0, 'include', 'text');
+      if (compositeMode && (!value.get(0) || !["include", "exclude"].includes(value.get(0)))) {
+        this.props.setValue(0, "include", "text");
+        if (!isLocked) {
+          this.setState({ value: "include" });
+        }
       }
       if (!value.get(0)) {
         this.setState({ isNew: true });
@@ -97,7 +100,7 @@ class Rule extends PureComponent {
       if (prevProps.isLocked && !isLocked) {
         this.setState({
           value: value.get(0),
-          operator: selectedOperator || 'equal',
+          operator: selectedOperator || "equal",
           field: selectedField,
           setValueData: [],
           isNew: !value.get(0) && !selectedOperator && !selectedField
@@ -147,7 +150,7 @@ class Rule extends PureComponent {
       this.clearError();
       this.setState({
         value: null,
-        operator: 'equal',
+        operator: "equal",
         field: null,
         isNew: false
       });
@@ -186,7 +189,7 @@ class Rule extends PureComponent {
 
       if (!value || !field || (!operator && compositeMode)) {
         this.setState({
-          error: 'Необходимо заполнить все поля'
+          error: "Необходимо заполнить все поля"
         });
         return false;
       }
@@ -194,7 +197,7 @@ class Rule extends PureComponent {
       return true;
     }
 
-    clearError = () => this.setState({ error: '' });
+    clearError = () => this.setState({ error: "" });
 
     renderField() {
       const {config, isLocked} = this.props;
@@ -238,22 +241,29 @@ class Rule extends PureComponent {
       const val = value.get(0);
 
       if (isLocked) {
-        return <div className={
-          classNames(
-            "segment",
-            val === "include" && "segment_include",
-            val === "exclude" && "segment_exclude"
-          )
-        }>
-          {values[val]}
-        </div>;
+        return (
+          <div className={
+            classNames(
+              "segment",
+              val === "include" && "segment_include",
+              val === "exclude" && "segment_exclude"
+            )
+          }
+          key="switcher"
+          >
+            {values[val]}
+          </div>
+        );
       }
 
       return (
-        <div className="rule-switcher">
+        <div
+          key="switcher"
+          className="rule-switcher"
+        >
           <SliderSwitch
-            onSwitch={value => this.props.setValue(0, value, 'text')}
-            activeValue={val}
+            onSwitch={value => this.setValue(0, value, "text")}
+            activeValue={this.state.value}
             options={Object.keys(values).map(value => ({ name: values[value], value }))}
           />
         </div>
@@ -377,7 +387,7 @@ class Rule extends PureComponent {
       if (error) {
         return <div className="rule--error">
           {error}
-        </div>
+        </div>;
       }
       const { renderRuleError, showErrorMessage } = config.settings;
       const oneValueError = valueError && valueError.toArray().filter(e => !!e).shift() || null;
@@ -430,7 +440,6 @@ class Rule extends PureComponent {
       const { valueSrc, value, config } = this.props;
       const canShrinkValue = valueSrc.first() == "value" && !showOperatorOptions && value.size == 1 && selectedFieldWidgetConfig.fullWidth;
       const { renderButtonGroup: BtnGrp, compositeMode } = config.settings;
-
 
       const parts = [
         compositeMode && this.renderSwitcher(),
