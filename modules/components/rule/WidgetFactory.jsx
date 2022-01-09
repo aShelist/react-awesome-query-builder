@@ -6,7 +6,7 @@ export default ({
   value: immValue, valueError: immValueError, asyncListValues,
   isSpecialRange, fieldDefinition,
   widget, widgetDefinition, widgetValueLabel, valueLabels, textSeparators, setValueHandler,
-  config, field, operator, readonly, parentField, parentFuncs, id, groupId
+  config, field, operator, readonly, parentField, parentFuncs, id, groupId, saveRule
 }) => {
   const {factory: widgetFactory, ...fieldWidgetProps} = widgetDefinition;
   const isConst = isFuncArg && fieldDefinition.valueSources && fieldDefinition.valueSources.length == 1 && fieldDefinition.valueSources[0] == "const";
@@ -15,11 +15,11 @@ export default ({
   if (!widgetFactory) {
     return "?";
   }
-    
-  let value = isSpecialRange 
-    ? [immValue.get(0), immValue.get(1)] 
+
+  let value = isSpecialRange
+    ? [immValue.get(0), immValue.get(1)]
     : (immValue ? immValue.get(delta) : undefined);
-  const valueError = immValueError && (isSpecialRange 
+  const valueError = immValueError && (isSpecialRange
     ? [immValueError.get(0), immValueError.get(1)]
     : immValueError.get(delta)
   ) || null;
@@ -45,9 +45,10 @@ export default ({
     setValue: setValueHandler,
     readonly: readonly,
     asyncListValues: asyncListValues,
-    id, groupId
+    id, groupId,
+    onPressEnter: saveRule
   });
-    
+
   if (widget == "field") {
     //
   }
@@ -59,10 +60,10 @@ export default ({
       if (Array.isArray(defaultValue))
         return defaultValue.map(v => getTitleInListValues(fieldSettings.listValues, v) || v).join(", ");
       else
-        return (getTitleInListValues(fieldSettings.listValues, defaultValue) || defaultValue);  
+        return (getTitleInListValues(fieldSettings.listValues, defaultValue) || defaultValue);
     }
     return ""+defaultValue;
   }
-    
+
   return widgetFactory(widgetProps);
 };

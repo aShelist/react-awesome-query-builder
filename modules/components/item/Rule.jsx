@@ -6,14 +6,12 @@ import Draggable from "../containers/Draggable";
 import OperatorWrapper from "../rule/OperatorWrapper";
 import FieldWrapper from "../rule/FieldWrapper";
 import Widget from "../rule/Widget";
-import OperatorOptions from "../rule/OperatorOptions";
 import {getFieldConfig, getOperatorConfig, getFieldWidgetConfig} from "../../utils/configUtils";
-import {getFieldPathLabels, getValueSourcesForFieldOp} from "../../utils/ruleUtils";
+import {getFieldPathLabels} from "../../utils/ruleUtils";
 import {useOnPropsChanged} from "../../utils/reactUtils";
 import {Col, DragIcon, dummyFn, ConfirmFn} from "../utils";
 import { Button, Dropdown, Menu } from "antd";
-import { EllipsisOutlined } from "@ant-design/icons";
-import { IconAddGroup, IconCheck, IconPencil, IconPlus, IconTrash, IconCancel } from "../icons";
+import { IconAddGroup, IconCheck, IconPencil, IconPlus, IconTrash, IconCancel, IconMore } from "../icons";
 import Immutable from "immutable";
 const classNames = require("classnames");
 
@@ -89,13 +87,14 @@ class Rule extends PureComponent {
           this.setState({ value: "include" });
         }
       }
+
       if (!value.get(0)) {
         this.setState({ isNew: true });
       }
     }
 
     componentDidUpdate(prevProps) {
-      const { isLocked, value, selectedField, selectedOperator } = this.props;
+      const { isLocked, value, selectedField, selectedOperator, config } = this.props;
 
       if (prevProps.isLocked && !isLocked) {
         this.setState({
@@ -105,6 +104,17 @@ class Rule extends PureComponent {
           setValueData: [],
           isNew: !value.get(0) && !selectedOperator && !selectedField
         });
+      }
+
+      const { compositeMode } = config.settings;
+      const compositeModePrev = prevProps.config.settings.compositeMode;
+
+      if (!compositeModePrev && compositeMode && !["include", "exclude"].includes(value.get(0))) {
+        this.props.setValue(0, "include", "text");
+        this.clearError();
+        if (!isLocked) {
+          this.setState({ value: "include" });
+        }
       }
     }
 
@@ -188,8 +198,19 @@ class Rule extends PureComponent {
       const { compositeMode } = config.settings;
 
       if (!value || !field || (!operator && compositeMode)) {
+        let errorField = "";
+
+        if (!field) {
+          errorField = "field";
+        } else if (!value) {
+          errorField = "value";
+        } else if (!operator && compositeMode) {
+          errorField = "operator";
+        }
+
         this.setState({
-          error: "Необходимо заполнить все поля"
+          error: "Необходимо заполнить все поля",
+          errorField,
         });
         return false;
       }
@@ -197,10 +218,11 @@ class Rule extends PureComponent {
       return true;
     }
 
-    clearError = () => this.setState({ error: "" });
+    clearError = () => this.setState({ error: "", errorField: "" });
 
     renderField() {
       const {config, isLocked} = this.props;
+      const { errorField } = this.state;
       const { immutableFieldsMode, compositeMode } = config.settings;
 
       if (!isLocked) {
@@ -208,9 +230,11 @@ class Rule extends PureComponent {
           key="field"
           classname={classNames("rule--field", compositeMode && "rule--field_composite")}
           config={config}
+          error={errorField === "field"}
           selectedField={this.state.field}
-          setField={!immutableFieldsMode ? this.setField : dummyFn}
+          setField={this.setField}
           parentField={this.props.parentField}
+          saveRule={this.saveField}
           readonly={immutableFieldsMode || isLocked}
           id={this.props.id}
           groupId={this.props.groupId}
@@ -286,11 +310,13 @@ class Rule extends PureComponent {
         selectedFieldPartsLabels, selectedFieldWidgetConfig, showOperator, showOperatorLabel
       } = this.meta;
       const { immutableOpsMode } = config.settings;
+      const { errorField } = this.state;
 
       if (!isLocked) {
         return <OperatorWrapper
           key="operator"
           config={config}
+          error={errorField === "operator"}
           selectedField={this.state.field || this.props.selectedField}
           selectedOperator={this.state.operator}
           setOperator={this.setOperator}
@@ -332,6 +358,7 @@ class Rule extends PureComponent {
       const {config, valueError, isLocked} = this.props;
       const { showWidget } = this.meta;
       const { immutableValuesMode } = config.settings;
+      const { errorField } = this.state;
       if (!showWidget && !isLocked && !this.state.field) return null;
 
       let widget;
@@ -342,6 +369,8 @@ class Rule extends PureComponent {
           field={this.state.field}
           parentField={this.props.parentField}
           operator={this.state.operator}
+          error={errorField === 'value'}
+          saveRule={this.saveField}
           value={new Immutable.List([ this.state.value ])}
           valueSrc={this.props.valueSrc}
           asyncListValues={this.props.asyncListValues}
@@ -383,12 +412,7 @@ class Rule extends PureComponent {
 
     renderError() {
       const {config, valueError} = this.props;
-      const { error } = this.state;
-      if (error) {
-        return <div className="rule--error">
-          {error}
-        </div>;
-      }
+
       const { renderRuleError, showErrorMessage } = config.settings;
       const oneValueError = valueError && valueError.toArray().filter(e => !!e).shift() || null;
       return showErrorMessage && oneValueError
@@ -429,7 +453,7 @@ class Rule extends PureComponent {
             overlay={menu}
             overlayClassName="rule-dropdown"
           >
-            <Button className="group--actions__dropdown" icon={<EllipsisOutlined  />} />
+            <Button className="group--actions__dropdown" icon={<IconMore  />} />
           </Dropdown>
         </>
       );

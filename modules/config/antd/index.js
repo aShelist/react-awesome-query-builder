@@ -1,5 +1,6 @@
 import en_US from "antd/lib/locale-provider/en_US";
 import AntdWidgets from "../../components/widgets/antd";
+import { FormItem, Select } from "@vkontakte/vkui";
 import BasicConfig, {stringifyForDisplay} from "../basic";
 import {getTitleInListValues} from "../../utils/stuff";
 import {SqlString} from "../../utils/export";
@@ -46,7 +47,7 @@ const settings = {
 
   renderOperator: (props) => <FieldSelect {...props} />,
   // renderOperator: (props) => <FieldDropdown {...props} />,
-  
+
   renderFunc: (props) => <FieldSelect {...props} />,
   renderConjs: (props) => <Conjs {...props} />,
   renderSwitch: (props) => <Switch {...props} />,

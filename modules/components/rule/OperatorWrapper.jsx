@@ -6,11 +6,12 @@ import {Col} from "../utils";
 export default class OperatorWrapper extends PureComponent {
   render() {
     const {
-      config, selectedField, selectedOperator, setOperator, 
-      selectedFieldPartsLabels, showOperator, showOperatorLabel, selectedFieldWidgetConfig, readonly, id, groupId
+      config, selectedField, selectedOperator, setOperator,
+      selectedFieldPartsLabels, showOperator, showOperatorLabel, selectedFieldWidgetConfig, readonly, id, groupId,
+      error
     } = this.props;
     const operator = showOperator
-            && <Col key={"operators-for-"+(selectedFieldPartsLabels || []).join("_")} className="rule--operator">
+            && <Col key={"operators-for-"+(selectedFieldPartsLabels || []).join("_")} className={`rule--operator ${error ? 'operator-error' : ''}`}>
               { config.settings.showLabels
                     && <label className="rule--label">{config.settings.operatorLabel}</label>
               }

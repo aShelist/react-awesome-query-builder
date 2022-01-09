@@ -173,7 +173,7 @@ export default class Widget extends PureComponent {
   }
 
   renderWidget = (delta, meta, props) => {
-    const {config, isFuncArg, leftField, operator, value: values, valueError, readonly, parentField, parentFuncs, id, groupId} = props;
+    const {config, isFuncArg, leftField, operator, value: values, valueError, readonly, parentField, parentFuncs, id, groupId, error, saveRule} = props;
     const {settings} = config;
     const { widgets, iValues, aField } = meta;
     const value = isFuncArg ? iValues : values;
@@ -185,9 +185,10 @@ export default class Widget extends PureComponent {
       : null;
 
     return (
-      <div key={"widget-"+field+"-"+delta} className="widget--widget">
+      <div key={"widget-"+field+"-"+delta} className={`widget--widget ${error ? 'widget-error' : ''}`}>
         {valueSrc == "func" ? null : widgetLabel}
         <WidgetFactory
+          saveRule={saveRule}
           id={id}
           groupId={groupId}
           valueSrc={valueSrc}

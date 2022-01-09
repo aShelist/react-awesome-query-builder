@@ -1,7 +1,6 @@
 import React, { PureComponent } from "react";
 import { Dropdown, Menu, Button } from "antd";
-import { EllipsisOutlined } from '@ant-design/icons';
-import { IconAddGroup, IconPlus, IconTrash } from '../icons';
+import { IconAddGroup, IconMore, IconPlus, IconTrash } from '../icons';
 
 const groupActionsPositionList = {
   topLeft: "group--actions--tl",
@@ -49,7 +48,7 @@ export class GroupActions extends PureComponent {
         <Dropdown
           overlay={menu}
         >
-          <Button className="group--actions__dropdown" icon={<EllipsisOutlined  />} />
+          <Button className="group--actions__dropdown" icon={<IconMore />} />
         </Dropdown>
       </div>
     );

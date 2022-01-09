@@ -39,7 +39,7 @@ export class BasicGroup extends PureComponent {
     setNot: PropTypes.func.isRequired,
     setLock: PropTypes.func.isRequired,
     actions: PropTypes.object.isRequired,
-    renderHeader: PropTypes.func
+    renderHeader: PropTypes.object
   };
 
   constructor(props) {

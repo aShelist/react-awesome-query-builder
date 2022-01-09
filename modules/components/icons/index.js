@@ -4,3 +4,4 @@ export { IconTrash } from "./IconTrash";
 export { IconPencil } from "./IconPencil";
 export { IconCheck } from "./IconCheck";
 export { IconCancel } from "./IconCancel";
+export { IconMore } from "./IconMore";

@@ -93,7 +93,7 @@ export default class Field extends PureComponent {
         const tooltip = field.tooltip;
         const subpath = (path ? path : []).concat(fieldKey);
         const disabled = field.disabled;
-            
+
         if (field.hideForSelect)
           return undefined;
 
@@ -102,6 +102,7 @@ export default class Field extends PureComponent {
             disabled,
             key: fieldKey,
             path: prefix+fieldKey,
+            value: prefix+fieldKey,
             label,
             fullLabel,
             altLabel,
@@ -113,6 +114,7 @@ export default class Field extends PureComponent {
             disabled,
             key: fieldKey,
             path: prefix+fieldKey,
+            value: prefix+fieldKey,
             label,
             fullLabel,
             altLabel,
@@ -129,12 +131,13 @@ export default class Field extends PureComponent {
       const renderProps = {
         id,
         groupId,
-        config, 
-        customProps, 
+        config,
+        customProps,
         readonly,
         setField,
         ...this.meta
       };
+
       return renderField(renderProps);
     }
 

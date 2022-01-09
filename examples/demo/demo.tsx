@@ -69,21 +69,35 @@ export default class DemoQueryBuilder extends Component<{}, DemoQueryBuilderStat
       config: loadedConfig,
     };
 
-    render = () => (
-      <div>
-        {/* @ts-ignore */}
-        <Query
-          {...this.state.config}
-          // value={this.state.tree}
-          onChange={this.onChange}
-          renderBuilder={this.renderBuilder}
-        />
+    toggleMode = () => this.setState(state => ({
+      ...state,
+      config: {
+        ...state.config,
+        settings: {
+          ...state.config.settings,
+          compositeMode: !state.config.settings.compositeMode
+        }
+      }
+    }))
 
-        <div className="query-builder-result">
-          {this.renderResult(this.state)}
+    render = () => {
+      return (
+        <div>
+          <button onClick={this.toggleMode}>toggle</button>
+          {/* @ts-ignore */}
+          <Query
+            {...this.state.config}
+            // value={this.state.tree}
+            onChange={this.onChange}
+            renderBuilder={this.renderBuilder}
+          />
+
+          <div className="query-builder-result">
+            {this.renderResult(this.state)}
+          </div>
         </div>
-      </div>
-    )
+      )
+    }
 
     onConfigChanged = (e: Event) => {
       const {detail: {config, _initTree, _initValue}} = e as CustomEvent<CustomEventDetail>;
